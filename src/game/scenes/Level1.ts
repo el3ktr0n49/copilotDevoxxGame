@@ -23,12 +23,16 @@ export class Level1 extends Scene {
     private enemies: Enemy[] = [];
     private endTrigger!: Physics.Arcade.StaticGroup;
     private levelComplete: boolean = false;
+    private playerDead: boolean = false;
 
     constructor() {
         super('Level1');
     }
 
     create() {
+        this.levelComplete = false;
+        this.playerDead = false;
+
         const worldW = getWorldWidth();
         const worldH = getWorldHeight();
 
@@ -217,6 +221,9 @@ export class Level1 extends Scene {
     }
 
     private onPlayerDied(data: { coins: number }): void {
+        if (this.playerDead) return;
+        this.playerDead = true;
+
         this.cameras.main.shake(300, 0.02);
         this.time.delayedCall(500, () => {
             this.cleanup();
@@ -228,11 +235,13 @@ export class Level1 extends Scene {
         EventBus.off('player-attack', this.handlePlayerAttack, this);
         EventBus.off('player-died', this.onPlayerDied, this);
         EventBus.off('enemy-killed', this.onEnemyKilled, this);
+        this.input.keyboard?.removeAllKeys(true, true);
+        this.input.removeAllListeners();
         this.hud.destroy();
     }
 
     update(time: number, delta: number): void {
-        if (this.levelComplete) return;
+        if (this.levelComplete || this.playerDead) return;
 
         this.player.update(time, delta);
         this.parallax.update();

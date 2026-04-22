@@ -35,6 +35,10 @@ export class Shop extends Scene {
     create() {
         this.cameras.main.setBackgroundColor(0x1a0a2e);
 
+        // Ensure pointer input is in a clean state after Level1 transition
+        this.input.enabled = true;
+        this.input.manager.resetPointers();
+
         // Title
         this.add.text(512, 50, 'FORGE & BOUTIQUE', {
             fontFamily: 'monospace',

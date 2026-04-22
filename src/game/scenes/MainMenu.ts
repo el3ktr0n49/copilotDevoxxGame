@@ -45,7 +45,7 @@ export class MainMenu extends Scene
         playBtn.on('pointerdown', () => this.changeScene());
 
         // Controls info
-        this.add.text(512, 560, 'Arrows: Move / Jump / Crouch\nSpace: Attack', {
+        this.add.text(512, 560, 'ZQSD: Move / Jump / Crouch\nEnter: Attack', {
             fontFamily: 'monospace',
             fontSize: '14px',
             color: '#666666',
@@ -53,7 +53,7 @@ export class MainMenu extends Scene
         }).setOrigin(0.5);
 
         // Blinking prompt
-        const prompt = this.add.text(512, 500, 'Press SPACE to start', {
+        const prompt = this.add.text(512, 500, 'Press ENTER or SPACE to start', {
             fontFamily: 'monospace',
             fontSize: '18px',
             color: '#888888',
@@ -70,6 +70,7 @@ export class MainMenu extends Scene
 
         if (this.input.keyboard) {
             this.input.keyboard.once('keydown-SPACE', () => this.changeScene());
+            this.input.keyboard.once('keydown-ENTER', () => this.changeScene());
         }
 
         EventBus.emit('current-scene-ready', this);

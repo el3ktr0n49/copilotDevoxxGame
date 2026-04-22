@@ -5,6 +5,7 @@ import { EventBus } from '../EventBus';
 export class HUD {
     private scene: Scene;
     private healthBarFill!: GameObjects.Image;
+    private healthText!: GameObjects.Text;
     private coinText!: GameObjects.Text;
 
     private currentHealth: number;
@@ -20,37 +21,70 @@ export class HUD {
     }
 
     private createHUD(): void {
-        const margin = 16;
+        const margin = 20;
+        const panelWidth = 220;
+        const panelHeight = 80;
 
-        // Health bar
-        this.scene.add.image(margin + 52, margin + 8, 'ui_healthbar_bg')
-            .setOrigin(0.5)
-            .setScrollFactor(0)
-            .setDepth(DEPTH.HUD);
+        // Semi-transparent dark background panel
+        const panel = this.scene.add.graphics();
+        panel.fillStyle(0x000000, 0.55);
+        panel.fillRoundedRect(margin - 8, margin - 8, panelWidth, panelHeight, 6);
+        panel.setScrollFactor(0);
+        panel.setDepth(DEPTH.HUD - 1);
 
-        this.healthBarFill = this.scene.add.image(margin + 4, margin + 4, 'ui_healthbar')
-            .setOrigin(0, 0)
-            .setScrollFactor(0)
-            .setDepth(DEPTH.HUD + 1);
-
-        // Coin display
-        this.scene.add.sprite(margin, margin + 30, 'item_coin', 0)
-            .setScrollFactor(0)
-            .setDepth(DEPTH.HUD)
-            .setScale(1.5);
-
-        this.coinText = this.scene.add.text(margin + 16, margin + 24, 'x 0', {
+        // ❤ HP label
+        this.scene.add.text(margin, margin, '\u2764 HP', {
             fontFamily: 'monospace',
-            fontSize: '14px',
-            color: '#ffcc00',
+            fontSize: '16px',
+            color: '#ff4444',
             stroke: '#000000',
             strokeThickness: 3,
         })
             .setScrollFactor(0)
             .setDepth(DEPTH.HUD);
 
+        // Health bar background
+        this.scene.add.image(margin + 77 + 2, margin + 6, 'ui_healthbar_bg')
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(DEPTH.HUD);
+
+        // Health bar fill
+        this.healthBarFill = this.scene.add.image(margin + 4, margin + 2, 'ui_healthbar')
+            .setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(DEPTH.HUD + 1);
+
+        // Numeric health text (e.g., "3 / 5")
+        this.healthText = this.scene.add.text(margin + 160, margin, `${this.currentHealth} / ${this.maxHealth}`, {
+            fontFamily: 'monospace',
+            fontSize: '14px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3,
+        })
+            .setScrollFactor(0)
+            .setDepth(DEPTH.HUD + 2);
+
+        // Coin icon
+        this.scene.add.sprite(margin + 4, margin + 40, 'item_coin', 0)
+            .setScrollFactor(0)
+            .setDepth(DEPTH.HUD)
+            .setScale(2);
+
+        // Coin text
+        this.coinText = this.scene.add.text(margin + 24, margin + 32, 'x 0', {
+            fontFamily: 'monospace',
+            fontSize: '20px',
+            color: '#ffdd00',
+            stroke: '#000000',
+            strokeThickness: 4,
+        })
+            .setScrollFactor(0)
+            .setDepth(DEPTH.HUD);
+
         // Sword icon
-        this.scene.add.image(margin, margin + 52, 'ui_sword')
+        this.scene.add.image(margin + 4, margin + 60, 'ui_sword')
             .setScrollFactor(0)
             .setDepth(DEPTH.HUD)
             .setScale(1.5);
@@ -70,6 +104,7 @@ export class HUD {
     private updateHealthBar(): void {
         const ratio = Math.max(0, this.currentHealth / this.maxHealth);
         this.healthBarFill.setScale(ratio, 1);
+        this.healthText.setText(`${this.currentHealth} / ${this.maxHealth}`);
 
         if (ratio <= 0.25) {
             this.healthBarFill.setTint(0xff0000);

@@ -12,6 +12,10 @@ export class GameOver extends Scene
     {
         this.cameras.main.setBackgroundColor(0x1a0000);
 
+        // Ensure pointer input is in a clean state after Level1 transition
+        this.input.enabled = true;
+        this.input.manager.resetPointers();
+
         this.add.text(512, 250, 'GAME OVER', {
             fontFamily: 'monospace', fontSize: '64px', color: '#ff2222',
             stroke: '#000000', strokeThickness: 8,
@@ -45,6 +49,7 @@ export class GameOver extends Scene
 
         if (this.input.keyboard) {
             this.input.keyboard.once('keydown-SPACE', () => this.scene.start('Level1'));
+            this.input.keyboard.once('keydown-ENTER', () => this.scene.start('Level1'));
         }
 
         EventBus.emit('current-scene-ready', this);

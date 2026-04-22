@@ -4,7 +4,11 @@ import { PLAYER_CONFIG, DEPTH } from '../config/GameConfig';
 import { EventBus } from '../EventBus';
 
 export class Player extends Physics.Arcade.Sprite {
-    private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+    private keyLeft!: Phaser.Input.Keyboard.Key;
+    private keyRight!: Phaser.Input.Keyboard.Key;
+    private keyDown!: Phaser.Input.Keyboard.Key;
+    private keyJump1!: Phaser.Input.Keyboard.Key;
+    private keyJump2!: Phaser.Input.Keyboard.Key;
     private attackKey!: Phaser.Input.Keyboard.Key;
     private health: number;
     private maxHealth: number;
@@ -81,12 +85,16 @@ export class Player extends Physics.Arcade.Sprite {
 
     private setupInput(): void {
         if (!this.scene.input.keyboard) return;
-        this.cursors = this.scene.input.keyboard.createCursorKeys();
-        this.attackKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyLeft = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.keyRight = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyDown = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyJump1 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.keyJump2 = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.attackKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     }
 
     update(time: number, delta: number): void {
-        if (!this.cursors) return;
+        if (!this.keyLeft) return;
         const body = this.body as Physics.Arcade.Body;
         const onGround = body.blocked.down;
 
@@ -114,7 +122,7 @@ export class Player extends Physics.Arcade.Sprite {
         if (this.isAttacking) return;
 
         // Crouch
-        if (this.cursors.down.isDown && onGround) {
+        if (this.keyDown.isDown && onGround) {
             body.setVelocityX(0);
             this.anims.play('player_crouch', true);
             const crouchBody = this.body as Physics.Arcade.Body;
@@ -127,11 +135,11 @@ export class Player extends Physics.Arcade.Sprite {
         }
 
         // Horizontal movement
-        if (this.cursors.left.isDown) {
+        if (this.keyLeft.isDown) {
             body.setVelocityX(-PLAYER_CONFIG.speed);
             this.setFlipX(true);
             this.facingRight = false;
-        } else if (this.cursors.right.isDown) {
+        } else if (this.keyRight.isDown) {
             body.setVelocityX(PLAYER_CONFIG.speed);
             this.setFlipX(false);
             this.facingRight = true;
@@ -140,7 +148,7 @@ export class Player extends Physics.Arcade.Sprite {
         }
 
         // Jump
-        if (this.cursors.up.isDown && onGround) {
+        if ((this.keyJump1.isDown || this.keyJump2.isDown) && onGround) {
             body.setVelocityY(PLAYER_CONFIG.jumpForce);
         }
 

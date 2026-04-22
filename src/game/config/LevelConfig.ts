@@ -21,27 +21,39 @@ function generateLevel1(): number[][] {
         map[LEVEL1_HEIGHT - 2][x] = 1;
     }
 
-    // Gaps in the ground
-    for (let x = 15; x <= 17; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
-    for (let x = 35; x <= 37; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
-    for (let x = 60; x <= 63; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
+    // Gaps in the ground (narrowed to 2 tiles max, with wall warnings)
+    // Gap 1: x=15-16 with wall warning at x=14
+    for (let x = 15; x <= 16; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
+    // Gap 2: x=35-36 with wall warning at x=34
+    for (let x = 35; x <= 36; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
+    // Gap 3: x=60-61 with wall warning at x=59
+    for (let x = 60; x <= 61; x++) { map[LEVEL1_HEIGHT - 1][x] = 0; map[LEVEL1_HEIGHT - 2][x] = 0; }
 
-    // Floating platforms
+    // Warning walls before each gap (visual cue)
+    map[LEVEL1_HEIGHT - 3][14] = 3;
+    map[LEVEL1_HEIGHT - 3][34] = 3;
+    map[LEVEL1_HEIGHT - 3][59] = 3;
+
+    // Floating platforms — all reachable with jumpForce=-450, gravity=800
+    // Ground at y=22. Max jump from ground ~3 tiles → y=19 reachable.
+    // Staircase patterns: y=20 → y=18 for higher spots.
     const platforms = [
-        { x: 8, y: 18, w: 4 },
-        { x: 14, y: 16, w: 3 },
-        { x: 20, y: 17, w: 5 },
-        { x: 28, y: 15, w: 3 },
-        { x: 33, y: 18, w: 4 },
-        { x: 40, y: 16, w: 6 },
-        { x: 48, y: 14, w: 3 },
-        { x: 52, y: 17, w: 4 },
-        { x: 58, y: 15, w: 3 },
-        { x: 65, y: 18, w: 5 },
-        { x: 72, y: 16, w: 4 },
-        { x: 78, y: 14, w: 3 },
-        { x: 83, y: 17, w: 5 },
-        { x: 90, y: 15, w: 4 },
+        { x: 8, y: 20, w: 4 },    // low step
+        { x: 13, y: 19, w: 3 },   // reachable from ground, near gap 1
+        { x: 20, y: 20, w: 5 },   // low step
+        { x: 26, y: 19, w: 4 },   // reachable from ground
+        { x: 33, y: 20, w: 4 },   // low step near gap 2
+        { x: 40, y: 20, w: 5 },   // low step
+        { x: 41, y: 18, w: 3 },   // reachable from platform at y=20
+        { x: 48, y: 20, w: 4 },   // low step
+        { x: 52, y: 19, w: 4 },   // reachable from ground
+        { x: 58, y: 20, w: 3 },   // low step near gap 3
+        { x: 65, y: 20, w: 5 },   // low step
+        { x: 72, y: 20, w: 4 },   // low step
+        { x: 73, y: 18, w: 3 },   // reachable from platform at y=20
+        { x: 80, y: 19, w: 4 },   // reachable from ground
+        { x: 87, y: 20, w: 5 },   // low step
+        { x: 90, y: 19, w: 4 },   // reachable from ground
     ];
 
     for (const p of platforms) {
@@ -50,37 +62,41 @@ function generateLevel1(): number[][] {
         }
     }
 
-    // Walls
+    // Walls (decorative / obstacles)
     map[LEVEL1_HEIGHT - 3][25] = 3;
     map[LEVEL1_HEIGHT - 4][25] = 3;
     map[LEVEL1_HEIGHT - 3][70] = 3;
     map[LEVEL1_HEIGHT - 4][70] = 3;
-    map[LEVEL1_HEIGHT - 5][70] = 3;
 
-    // Coins
+    // Coins — placed on or 1 tile above platforms/ground
     const coinPositions = [
-        [10, 17], [12, 17], [14, 15], [21, 16], [22, 16],
-        [29, 14], [41, 15], [42, 15], [43, 15],
-        [49, 13], [53, 16], [59, 14],
-        [66, 17], [67, 17], [73, 15], [74, 15],
-        [84, 16], [85, 16], [91, 14], [92, 14],
+        [9, 19], [11, 19],           // on platform y=20 (1 above)
+        [14, 18], [21, 19], [22, 19], // on platforms
+        [27, 18], [28, 18],           // on platform y=19
+        [34, 19],                     // on platform y=20
+        [41, 19], [42, 17], [43, 17], // ground + upper platform
+        [49, 19], [53, 18], [54, 18], // on platforms
+        [66, 19], [67, 19],           // on platform y=20
+        [73, 17], [74, 17],           // on upper platform y=18
+        [81, 18], [82, 18],           // on platform y=19
+        [88, 19], [91, 18], [92, 18], // on platforms
     ];
     for (const [cx, cy] of coinPositions) {
         if (cx < LEVEL1_WIDTH && cy < LEVEL1_HEIGHT) map[cy][cx] = 4;
     }
 
-    // Enemy spawns
+    // Enemy spawns — on ground or on platforms they can stand on
     const enemySpawns: [number, number, number][] = [
-        [12, LEVEL1_HEIGHT - 3, 5],  // slime
-        [22, LEVEL1_HEIGHT - 3, 5],  // slime
-        [30, 14, 7],                  // bat
-        [42, LEVEL1_HEIGHT - 3, 6],  // skeleton
-        [50, 13, 7],                  // bat
-        [55, LEVEL1_HEIGHT - 3, 5],  // slime
-        [68, LEVEL1_HEIGHT - 3, 6],  // skeleton
-        [75, 15, 7],                  // bat
-        [85, LEVEL1_HEIGHT - 3, 5],  // slime
-        [92, LEVEL1_HEIGHT - 3, 6],  // skeleton
+        [12, LEVEL1_HEIGHT - 3, 5],  // slime on ground
+        [22, LEVEL1_HEIGHT - 3, 5],  // slime on ground
+        [30, 17, 7],                  // bat (flying, near platforms)
+        [42, LEVEL1_HEIGHT - 3, 6],  // skeleton on ground
+        [50, 17, 7],                  // bat (flying)
+        [55, LEVEL1_HEIGHT - 3, 5],  // slime on ground
+        [68, LEVEL1_HEIGHT - 3, 6],  // skeleton on ground
+        [75, 16, 7],                  // bat (flying, near upper platform)
+        [85, LEVEL1_HEIGHT - 3, 5],  // slime on ground
+        [92, LEVEL1_HEIGHT - 3, 6],  // skeleton on ground
     ];
     for (const [ex, ey, et] of enemySpawns) {
         if (ex < LEVEL1_WIDTH && ey < LEVEL1_HEIGHT) map[ey][ex] = et;

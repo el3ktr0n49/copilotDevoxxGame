@@ -416,22 +416,22 @@ function generateItemSprites(scene: Scene): void {
 }
 
 function generateUITextures(scene: Scene): void {
-    // Health bar background
-    const hbBgCanvas = scene.textures.createCanvas('ui_healthbar_bg', 104, 16);
+    // Health bar background (larger)
+    const hbBgCanvas = scene.textures.createCanvas('ui_healthbar_bg', 154, 20);
     const hbBgCtx = hbBgCanvas!.getContext();
     hbBgCtx.fillStyle = '#333333';
-    hbBgCtx.fillRect(0, 0, 104, 16);
+    hbBgCtx.fillRect(0, 0, 154, 20);
     hbBgCtx.fillStyle = '#111111';
-    hbBgCtx.fillRect(2, 2, 100, 12);
+    hbBgCtx.fillRect(2, 2, 150, 16);
     hbBgCanvas!.refresh();
 
-    // Health bar fill
-    const hbCanvas = scene.textures.createCanvas('ui_healthbar', 100, 12);
+    // Health bar fill (larger)
+    const hbCanvas = scene.textures.createCanvas('ui_healthbar', 150, 16);
     const hbCtx = hbCanvas!.getContext();
     hbCtx.fillStyle = '#cc2222';
-    hbCtx.fillRect(0, 0, 100, 12);
+    hbCtx.fillRect(0, 0, 150, 16);
     hbCtx.fillStyle = '#ff4444';
-    hbCtx.fillRect(0, 0, 100, 4);
+    hbCtx.fillRect(0, 0, 150, 5);
     hbCanvas!.refresh();
 
     // Sword icon
