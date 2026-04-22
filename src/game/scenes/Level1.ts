@@ -27,6 +27,10 @@ export class Level1 extends Scene {
     private enemiesKilled: number = 0;
     private levelStartTime: number = 0;
     private totalEnemies: number = 0;
+    private fadeTimer: number = 0;
+    private deathTimer: number = 0;
+    private recapData: any = null;
+    private deathData: any = null;
     private initData: any = {};
 
     constructor() {
@@ -235,23 +239,20 @@ export class Level1 extends Scene {
         if (this.levelComplete) return;
         this.levelComplete = true;
 
-        // Transition to level recap
+        this.recapData = {
+            level: 1,
+            coins: this.player.getCoins(),
+            enemiesKilled: this.enemiesKilled,
+            totalEnemies: this.totalEnemies,
+            timeSeconds: Math.floor((this.time.now - this.levelStartTime) / 1000),
+            purchasedUpgrades: this.initData.purchasedUpgrades,
+            weaponDamage: this.initData.weaponDamage,
+            weaponRange: this.initData.weaponRange,
+            weaponEffect: this.initData.weaponEffect,
+            weaponColor: this.initData.weaponColor,
+        };
+        this.fadeTimer = 1100;
         this.cameras.main.fadeOut(1000, 0, 0, 0);
-        this.time.delayedCall(1100, () => {
-            this.cleanup();
-            this.scene.start('LevelRecap', {
-                level: 1,
-                coins: this.player.getCoins(),
-                enemiesKilled: this.enemiesKilled,
-                totalEnemies: this.totalEnemies,
-                timeSeconds: Math.floor((this.time.now - this.levelStartTime) / 1000),
-                purchasedUpgrades: this.initData.purchasedUpgrades,
-                weaponDamage: this.initData.weaponDamage,
-                weaponRange: this.initData.weaponRange,
-                weaponEffect: this.initData.weaponEffect,
-                weaponColor: this.initData.weaponColor,
-            });
-        });
     }
 
     private onPlayerDied(data: { coins: number }): void {
@@ -259,10 +260,8 @@ export class Level1 extends Scene {
         this.playerDead = true;
 
         this.cameras.main.shake(300, 0.02);
-        this.time.delayedCall(500, () => {
-            this.cleanup();
-            this.scene.start('GameOver', { coins: data.coins });
-        });
+        this.deathTimer = 500;
+        this.deathData = { coins: data.coins };
     }
 
     private cleanup(): void {
@@ -275,7 +274,29 @@ export class Level1 extends Scene {
     }
 
     update(time: number, delta: number): void {
-        if (this.levelComplete || this.playerDead) return;
+        // Handle level complete transition
+        if (this.levelComplete) {
+            if (this.fadeTimer > 0) {
+                this.fadeTimer -= delta;
+                if (this.fadeTimer <= 0) {
+                    this.cleanup();
+                    this.scene.start('LevelRecap', this.recapData);
+                }
+            }
+            return;
+        }
+
+        // Handle death transition
+        if (this.playerDead) {
+            if (this.deathTimer > 0) {
+                this.deathTimer -= delta;
+                if (this.deathTimer <= 0) {
+                    this.cleanup();
+                    this.scene.start('GameOver', this.deathData);
+                }
+            }
+            return;
+        }
 
         this.player.update(time, delta);
         this.parallax.update();
