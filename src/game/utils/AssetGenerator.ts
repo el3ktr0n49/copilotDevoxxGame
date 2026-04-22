@@ -280,6 +280,34 @@ function generateParallaxBackgrounds(scene: Scene): void {
         treeCtx.fill();
     }
     treeCanvas!.refresh();
+
+    // Clouds/mist layer (between mountains and trees)
+    const cloudCanvas = scene.textures.createCanvas('bg_clouds', w, h);
+    const cloudCtx = cloudCanvas!.getContext();
+    cloudCtx.clearRect(0, 0, w, h);
+    // Wispy clouds
+    cloudCtx.fillStyle = 'rgba(180, 180, 220, 0.15)';
+    const cloudShapes = [
+        { x: 100, y: 200, rx: 80, ry: 25 },
+        { x: 400, y: 150, rx: 120, ry: 30 },
+        { x: 700, y: 250, rx: 90, ry: 20 },
+        { x: 250, y: 350, rx: 60, ry: 18 },
+        { x: 850, y: 180, rx: 100, ry: 28 },
+        { x: 550, y: 400, rx: 70, ry: 22 },
+    ];
+    for (const c of cloudShapes) {
+        cloudCtx.beginPath();
+        cloudCtx.ellipse(c.x, c.y, c.rx, c.ry, 0, 0, Math.PI * 2);
+        cloudCtx.fill();
+        // Second smaller puff
+        cloudCtx.beginPath();
+        cloudCtx.ellipse(c.x + c.rx * 0.6, c.y - c.ry * 0.3, c.rx * 0.6, c.ry * 0.8, 0, 0, Math.PI * 2);
+        cloudCtx.fill();
+    }
+    // Ground mist
+    cloudCtx.fillStyle = 'rgba(150, 160, 200, 0.08)';
+    cloudCtx.fillRect(0, h - 200, w, 200);
+    cloudCanvas!.refresh();
 }
 
 function generateEnemySprites(scene: Scene): void {

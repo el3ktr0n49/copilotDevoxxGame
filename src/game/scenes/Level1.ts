@@ -59,6 +59,7 @@ export class Level1 extends Scene {
         this.parallax = new ParallaxManager(this);
         this.parallax.addLayer('bg_sky', 0.05, DEPTH.BG_SKY);
         this.parallax.addLayer('bg_mountains', 0.15, DEPTH.BG_MOUNTAINS);
+        this.parallax.addLayer('bg_clouds', 0.22, DEPTH.BG_FOREGROUND);
         this.parallax.addLayer('bg_trees', 0.3, DEPTH.BG_TREES);
 
         // Create tile groups
