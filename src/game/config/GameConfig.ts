@@ -3,7 +3,7 @@ export const GAME_HEIGHT = 768;
 
 export const PLAYER_CONFIG = {
     speed: 200,
-    jumpForce: -450,
+    jumpForce: -680,
     maxHealth: 5,
     invincibilityDuration: 1000,
     attackCooldown: 400,

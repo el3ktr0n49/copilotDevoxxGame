@@ -37,7 +37,7 @@ export class Player extends Physics.Arcade.Sprite {
         const body = this.body as Physics.Arcade.Body;
         body.setSize(16, 28);
         body.setOffset(8, 4);
-        body.setMaxVelocity(PLAYER_CONFIG.speed, 600);
+        body.setMaxVelocity(PLAYER_CONFIG.speed, 900);
 
         this.health = PLAYER_CONFIG.maxHealth;
         this.maxHealth = PLAYER_CONFIG.maxHealth;
