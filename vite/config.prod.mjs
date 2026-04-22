@@ -19,7 +19,7 @@ const phasermsg = () => {
 }
 
 export default defineConfig({
-    base: './',
+    base: '/copilotDevoxxGame/',
     plugins: [
         vue(),
         phasermsg()
