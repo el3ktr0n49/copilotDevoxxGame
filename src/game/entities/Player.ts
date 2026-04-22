@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { Scene, Physics, GameObjects } from 'phaser';
 import { PLAYER_CONFIG, DEPTH } from '../config/GameConfig';
 import { EventBus } from '../EventBus';

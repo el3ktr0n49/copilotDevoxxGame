@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { Scene, Physics } from 'phaser';
 import { Enemy } from './Enemy';
 import { ENEMY_TYPES } from '../config/EnemyConfig';

@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { Scene, Physics } from 'phaser';
 import { EventBus } from '../EventBus';
 import { Player } from '../entities/Player';
