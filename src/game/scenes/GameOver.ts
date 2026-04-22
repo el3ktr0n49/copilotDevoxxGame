@@ -12,9 +12,7 @@ export class GameOver extends Scene
     {
         this.cameras.main.setBackgroundColor(0x1a0000);
 
-        // Ensure pointer input is in a clean state after Level1 transition
         this.input.enabled = true;
-        this.input.manager.resetPointers();
 
         this.add.text(512, 250, 'GAME OVER', {
             fontFamily: 'monospace', fontSize: '64px', color: '#ff2222',

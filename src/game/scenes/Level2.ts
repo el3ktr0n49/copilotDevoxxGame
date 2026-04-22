@@ -50,8 +50,10 @@ export class Level2 extends Scene {
         const worldW = getWorldWidth(2);
         const worldH = getWorldHeight(2);
 
-        // Set world bounds
-        this.physics.world.setBounds(0, 0, worldW, worldH);
+        // Set world bounds (extended downward to allow pit falls)
+        this.physics.world.setBounds(0, 0, worldW, worldH + 200);
+        // Disable bottom wall so player can fall into pits
+        this.physics.world.setBoundsCollision(true, true, true, false);
 
         // Parallax backgrounds
         this.parallax = new ParallaxManager(this);
@@ -268,7 +270,7 @@ export class Level2 extends Scene {
         EventBus.off('player-attack', this.handlePlayerAttack, this);
         EventBus.off('player-died', this.onPlayerDied, this);
         EventBus.off('enemy-killed', this.onEnemyKilled, this);
-        this.input.keyboard?.removeAllKeys(true, true);
+        try { this.input.keyboard?.removeAllKeys(true, true); } catch (_e) { /* Phaser 4 compat */ }
         this.input.removeAllListeners();
         this.hud.destroy();
     }
@@ -308,7 +310,7 @@ export class Level2 extends Scene {
         }
 
         // Check fall into pit
-        if (this.player.y > getWorldHeight(2) - 10) {
+        if (this.player.y > getWorldHeight(2) + 50) {
             this.player.takeDamage(999);
         }
     }

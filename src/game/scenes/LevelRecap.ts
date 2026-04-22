@@ -29,7 +29,6 @@ export class LevelRecap extends Scene {
         this.cameras.main.setBackgroundColor(0x0a0a1e);
 
         this.input.enabled = true;
-        this.input.manager.resetPointers();
 
         const centerX = 512;
         const { level, coins, enemiesKilled, totalEnemies, timeSeconds } = this.recapData;
