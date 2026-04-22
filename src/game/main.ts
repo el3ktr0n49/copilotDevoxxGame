@@ -5,6 +5,7 @@ import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 import { Shop } from './scenes/Shop';
+import { LevelRecap } from './scenes/LevelRecap';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
@@ -16,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { x: 0, y: 800 },
+            gravity: { x: 0, y: 1800 },
             debug: false
         }
     },
@@ -25,6 +26,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         Level1,
+        LevelRecap,
         Shop,
         GameOver
     ]

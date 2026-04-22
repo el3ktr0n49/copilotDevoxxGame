@@ -3,6 +3,7 @@ import { EventBus } from '../EventBus';
 import { WEAPON_UPGRADES, WeaponUpgrade } from '../config/CraftingRecipes';
 
 interface ShopData {
+    level?: number;
     coins: number;
     purchasedUpgrades?: string[];
     weaponDamage?: number;
@@ -13,6 +14,7 @@ interface ShopData {
 
 export class Shop extends Scene {
     private coins: number = 0;
+    private currentLevel: number = 1;
     private purchasedUpgrades: string[] = [];
     private weaponDamage: number = 1;
     private weaponRange: number = 40;
@@ -25,6 +27,7 @@ export class Shop extends Scene {
 
     init(data: ShopData) {
         this.coins = data.coins || 0;
+        this.currentLevel = data.level || 1;
         this.purchasedUpgrades = data.purchasedUpgrades || [];
         this.weaponDamage = data.weaponDamage || 1;
         this.weaponRange = data.weaponRange || 40;
@@ -119,7 +122,9 @@ export class Shop extends Scene {
         });
 
         // Continue button
-        const continueBtn = this.add.text(512, 680, '[ CONTINUER → Niveau suivant ]', {
+        const nextLevel = this.currentLevel + 1;
+        const btnLabel = nextLevel === 2 ? '[ CONTINUER → Niveau 2 ]' : '[ RETOUR AU MENU ]';
+        const continueBtn = this.add.text(512, 680, btnLabel, {
             fontFamily: 'monospace',
             fontSize: '22px',
             color: '#ffffff',
@@ -156,8 +161,12 @@ export class Shop extends Scene {
     }
 
     private continueGame(): void {
-        this.scene.start('Level1', {
+        const nextLevel = this.currentLevel + 1;
+        const nextScene = nextLevel === 2 ? 'Level2' : 'MainMenu';
+        this.scene.start(nextScene, {
+            level: this.currentLevel,
             coins: this.coins,
+            purchasedUpgrades: this.purchasedUpgrades,
             weaponDamage: this.weaponDamage,
             weaponRange: this.weaponRange,
             weaponEffect: this.weaponEffect,

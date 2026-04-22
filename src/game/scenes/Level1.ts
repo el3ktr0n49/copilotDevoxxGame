@@ -24,14 +24,24 @@ export class Level1 extends Scene {
     private endTrigger!: Physics.Arcade.StaticGroup;
     private levelComplete: boolean = false;
     private playerDead: boolean = false;
+    private enemiesKilled: number = 0;
+    private levelStartTime: number = 0;
+    private totalEnemies: number = 0;
+    private initData: any = {};
 
     constructor() {
         super('Level1');
     }
 
+    init(data: any) {
+        this.initData = data || {};
+    }
+
     create() {
         this.levelComplete = false;
         this.playerDead = false;
+        this.enemiesKilled = 0;
+        this.enemies = [];
 
         const worldW = getWorldWidth();
         const worldH = getWorldHeight();
@@ -55,8 +65,22 @@ export class Level1 extends Scene {
         // Build the level from the map data
         this.buildLevel();
 
+        // Track enemy/time stats
+        this.totalEnemies = this.enemies.length;
+        this.levelStartTime = this.time.now;
+
         // Create player at start position
         this.player = new Player(this, 64, worldH - TILE_SIZE * 4);
+
+        // Apply weapon upgrades from shop
+        if (this.initData.weaponDamage) {
+            this.player.applyUpgrade(
+                this.initData.weaponDamage - 1,
+                (this.initData.weaponRange || 40) - 40,
+                this.initData.weaponEffect,
+                this.initData.weaponColor
+            );
+        }
 
         // Camera
         this.cameras.main.setBounds(0, 0, worldW, worldH);
@@ -198,6 +222,7 @@ export class Level1 extends Scene {
     }
 
     private onEnemyKilled(data: { x: number, y: number, coins: number }): void {
+        this.enemiesKilled++;
         // Drop coins at enemy position
         for (let i = 0; i < data.coins; i++) {
             const offsetX = (Math.random() - 0.5) * 30;
@@ -210,12 +235,21 @@ export class Level1 extends Scene {
         if (this.levelComplete) return;
         this.levelComplete = true;
 
-        // Transition to shop
+        // Transition to level recap
         this.cameras.main.fadeOut(1000, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
             this.cleanup();
-            this.scene.start('Shop', {
+            this.scene.start('LevelRecap', {
+                level: 1,
                 coins: this.player.getCoins(),
+                enemiesKilled: this.enemiesKilled,
+                totalEnemies: this.totalEnemies,
+                timeSeconds: Math.floor((this.time.now - this.levelStartTime) / 1000),
+                purchasedUpgrades: this.initData.purchasedUpgrades,
+                weaponDamage: this.initData.weaponDamage,
+                weaponRange: this.initData.weaponRange,
+                weaponEffect: this.initData.weaponEffect,
+                weaponColor: this.initData.weaponColor,
             });
         });
     }
