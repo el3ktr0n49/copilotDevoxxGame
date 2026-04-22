@@ -1,14 +1,8 @@
-import { GameObjects, Scene } from 'phaser';
-
+import { Scene } from 'phaser';
 import { EventBus } from '../EventBus';
 
 export class MainMenu extends Scene
 {
-    background: GameObjects.Image;
-    logo: GameObjects.Image;
-    title: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
-
     constructor ()
     {
         super('MainMenu');
@@ -16,61 +10,73 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'background');
+        this.cameras.main.setBackgroundColor(0x0a0a2a);
 
-        this.logo = this.add.image(512, 300, 'logo').setDepth(100);
-
-        this.title = this.add.text(512, 460, 'Main Menu', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
+        // Title
+        this.add.text(512, 200, 'SHADOW BLADE', {
+            fontFamily: 'monospace',
+            fontSize: '48px',
+            color: '#ff4444',
+            stroke: '#000000',
+            strokeThickness: 6,
             align: 'center'
-        }).setOrigin(0.5).setDepth(100);
+        }).setOrigin(0.5);
+
+        // Subtitle
+        this.add.text(512, 260, 'A Metroidvania Adventure', {
+            fontFamily: 'monospace',
+            fontSize: '16px',
+            color: '#aaaaaa',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Play button
+        const playBtn = this.add.text(512, 420, '[ PLAY ]', {
+            fontFamily: 'monospace',
+            fontSize: '28px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 4,
+            align: 'center'
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        playBtn.on('pointerover', () => playBtn.setColor('#ffcc00'));
+        playBtn.on('pointerout', () => playBtn.setColor('#ffffff'));
+        playBtn.on('pointerdown', () => this.changeScene());
+
+        // Controls info
+        this.add.text(512, 560, 'Arrows: Move / Jump / Crouch\nSpace: Attack', {
+            fontFamily: 'monospace',
+            fontSize: '14px',
+            color: '#666666',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Blinking prompt
+        const prompt = this.add.text(512, 500, 'Press SPACE to start', {
+            fontFamily: 'monospace',
+            fontSize: '18px',
+            color: '#888888',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        this.tweens.add({
+            targets: prompt,
+            alpha: 0.3,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+        });
+
+        if (this.input.keyboard) {
+            this.input.keyboard.once('keydown-SPACE', () => this.changeScene());
+        }
 
         EventBus.emit('current-scene-ready', this);
     }
-    
+
     changeScene ()
     {
-        if (this.logoTween)
-        {
-            this.logoTween.stop();
-            this.logoTween = null;
-        }
-
-        this.scene.start('Game');
-    }
-
-    moveLogo (vueCallback: ({ x, y }: { x: number, y: number }) => void)
-    {
-        if (this.logoTween)
-        {
-            if (this.logoTween.isPlaying())
-            {
-                this.logoTween.pause();
-            }
-            else
-            {
-                this.logoTween.play();
-            }
-        } 
-        else
-        {
-            this.logoTween = this.tweens.add({
-                targets: this.logo,
-                x: { value: 750, duration: 3000, ease: 'Back.easeInOut' },
-                y: { value: 80, duration: 1500, ease: 'Sine.easeOut' },
-                yoyo: true,
-                repeat: -1,
-                onUpdate: () => {
-                    if (vueCallback)
-                    {
-                        vueCallback({
-                            x: Math.floor(this.logo.x),
-                            y: Math.floor(this.logo.y)
-                        });
-                    }
-                }
-            });
-        }
+        this.scene.start('Level1');
     }
 }
