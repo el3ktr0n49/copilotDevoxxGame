@@ -151,6 +151,7 @@ export class Shop extends Scene {
 
         // Refresh the scene
         this.scene.restart({
+            level: this.currentLevel,
             coins: this.coins,
             purchasedUpgrades: this.purchasedUpgrades,
             weaponDamage: this.weaponDamage,
