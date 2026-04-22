@@ -11,6 +11,14 @@ export function generateAllAssets(scene: Scene): void {
     generateUITextures(scene);
 }
 
+// Helper: after drawing a spritesheet on a canvas texture, add frame data
+function addFrames(scene: Scene, key: string, frameWidth: number, frameHeight: number, frameCount: number): void {
+    const texture = scene.textures.get(key);
+    for (let i = 0; i < frameCount; i++) {
+        texture.add(i, 0, i * frameWidth, 0, frameWidth, frameHeight);
+    }
+}
+
 function generatePlayerSprites(scene: Scene): void {
     const s = TILE_SIZE;
 
@@ -19,52 +27,44 @@ function generatePlayerSprites(scene: Scene): void {
     const idleCtx = idleCanvas!.getContext();
     for (let f = 0; f < 2; f++) {
         const ox = f * s;
-        // Body
         idleCtx.fillStyle = '#3355cc';
         idleCtx.fillRect(ox + 8, 8, 16, 16);
-        // Head
         idleCtx.fillStyle = '#ffcc99';
         idleCtx.fillRect(ox + 10, 2, 12, 10);
-        // Eyes
         idleCtx.fillStyle = '#000000';
         idleCtx.fillRect(ox + 12, 5, 2, 2);
         idleCtx.fillRect(ox + 18, 5, 2, 2);
-        // Legs
         idleCtx.fillStyle = '#224488';
         idleCtx.fillRect(ox + 10, 24, 4, 6);
         idleCtx.fillRect(ox + 18, 24, 4, f === 0 ? 6 : 8);
-        // Sword hand
         idleCtx.fillStyle = '#aaaaaa';
         idleCtx.fillRect(ox + 24, 12, 4, 2);
         idleCtx.fillRect(ox + 26, 10, 2, 6);
     }
     idleCanvas!.refresh();
+    addFrames(scene, 'player_idle', s, s, 2);
 
     // Player run spritesheet (4 frames)
     const runCanvas = scene.textures.createCanvas('player_run', s * 4, s);
     const runCtx = runCanvas!.getContext();
     for (let f = 0; f < 4; f++) {
         const ox = f * s;
-        // Body
         runCtx.fillStyle = '#3355cc';
         runCtx.fillRect(ox + 8, 8, 16, 16);
-        // Head
         runCtx.fillStyle = '#ffcc99';
         runCtx.fillRect(ox + 10, 2, 12, 10);
-        // Eyes
         runCtx.fillStyle = '#000000';
         runCtx.fillRect(ox + 14, 5, 2, 2);
         runCtx.fillRect(ox + 20, 5, 2, 2);
-        // Legs - alternating run cycle
         runCtx.fillStyle = '#224488';
         const legOff = [0, 2, 0, -2];
         runCtx.fillRect(ox + 10, 24 + legOff[f], 4, 6);
         runCtx.fillRect(ox + 18, 24 - legOff[f], 4, 6);
-        // Sword
         runCtx.fillStyle = '#aaaaaa';
         runCtx.fillRect(ox + 24, 14, 6, 2);
     }
     runCanvas!.refresh();
+    addFrames(scene, 'player_run', s, s, 4);
 
     // Player jump (1 frame)
     const jumpCanvas = scene.textures.createCanvas('player_jump', s, s);
@@ -103,24 +103,17 @@ function generatePlayerSprites(scene: Scene): void {
     const atkCtx = atkCanvas!.getContext();
     for (let f = 0; f < 3; f++) {
         const ox = f * s;
-        // Body
         atkCtx.fillStyle = '#3355cc';
         atkCtx.fillRect(ox + 6, 8, 16, 16);
-        // Head
         atkCtx.fillStyle = '#ffcc99';
         atkCtx.fillRect(ox + 8, 2, 12, 10);
-        // Eyes
         atkCtx.fillStyle = '#000000';
         atkCtx.fillRect(ox + 10, 5, 2, 2);
         atkCtx.fillRect(ox + 16, 5, 2, 2);
-        // Legs
         atkCtx.fillStyle = '#224488';
         atkCtx.fillRect(ox + 8, 24, 4, 6);
         atkCtx.fillRect(ox + 16, 24, 4, 6);
-        // Sword swing animation
         atkCtx.fillStyle = '#cccccc';
-        atkCtx.strokeStyle = '#ffffff';
-        atkCtx.lineWidth = 2;
         if (f === 0) {
             atkCtx.fillRect(ox + 22, 4, 3, 14);
         } else if (f === 1) {
@@ -130,6 +123,7 @@ function generatePlayerSprites(scene: Scene): void {
         }
     }
     atkCanvas!.refresh();
+    addFrames(scene, 'player_attack', s, s, 3);
 }
 
 function generateTileTextures(scene: Scene): void {
@@ -314,8 +308,7 @@ function generateEnemySprites(scene: Scene): void {
         slimeCtx.fillRect(ox + 10, 10 + squish, 4, 2);
     }
     slimeCanvas!.refresh();
-
-    // Skeleton (2 frames)
+    addFrames(scene, 'enemy_slime', s, s, 2);
     const skelCanvas = scene.textures.createCanvas('enemy_skeleton', s * 2, s);
     const skelCtx = skelCanvas!.getContext();
     for (let f = 0; f < 2; f++) {
@@ -348,8 +341,7 @@ function generateEnemySprites(scene: Scene): void {
         skelCtx.fillRect(ox + 24, 14, 6, 2);
     }
     skelCanvas!.refresh();
-
-    // Bat (2 frames)
+    addFrames(scene, 'enemy_skeleton', s, s, 2);
     const batCanvas = scene.textures.createCanvas('enemy_bat', s * 2, s);
     const batCtx = batCanvas!.getContext();
     for (let f = 0; f < 2; f++) {
@@ -377,8 +369,7 @@ function generateEnemySprites(scene: Scene): void {
         batCtx.fillRect(ox + 28, 12 + wingY, 4, 3);
     }
     batCanvas!.refresh();
-
-    // Bone projectile
+    addFrames(scene, 'enemy_bat', s, s, 2);
     const boneCanvas = scene.textures.createCanvas('projectile_bone', 16, 8);
     const boneCtx = boneCanvas!.getContext();
     boneCtx.fillStyle = '#eeeecc';
@@ -409,8 +400,7 @@ function generateItemSprites(scene: Scene): void {
         }
     }
     coinCanvas!.refresh();
-
-    // Heart (health pickup)
+    addFrames(scene, 'item_coin', s, s, 4);
     const heartCanvas = scene.textures.createCanvas('item_heart', s, s);
     const heartCtx = heartCanvas!.getContext();
     heartCtx.fillStyle = '#ff2244';

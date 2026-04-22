@@ -128,7 +128,7 @@ export class Level1 extends Scene {
                             .refreshBody();
                         break;
                     case 4: { // Coin
-                        const coinSprite = new Coin(this, px, py);
+                        const coinSprite = new Coin(this, px, py, 1, false);
                         this.coinGroup.add(coinSprite);
                         break;
                     }

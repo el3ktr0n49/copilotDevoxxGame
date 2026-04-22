@@ -4,10 +4,12 @@ import { DEPTH } from '../config/GameConfig';
 export class Coin extends Physics.Arcade.Sprite {
     private value: number;
 
-    constructor(scene: Scene, x: number, y: number, value: number = 1) {
+    constructor(scene: Scene, x: number, y: number, value: number = 1, addPhysics: boolean = true) {
         super(scene, x, y, 'item_coin', 0);
         scene.add.existing(this);
-        scene.physics.add.existing(this, true); // static body
+        if (addPhysics) {
+            scene.physics.add.existing(this, true);
+        }
 
         this.value = value;
         this.setDepth(DEPTH.COINS);
@@ -26,7 +28,6 @@ export class Coin extends Physics.Arcade.Sprite {
     getValue(): number { return this.value; }
 
     collect(): void {
-        // Float up and fade out
         this.scene.tweens.add({
             targets: this,
             y: this.y - 30,
